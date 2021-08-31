@@ -121,6 +121,15 @@ config rule
 	option proto 'udp'
 	option target 'ACCEPT'
 
+config rule
+	option name 'Support-UDP-Traceroute'
+	option src 'wan'
+	option dest_port '33434:33689'
+	option proto 'udp'
+	option family 'ipv4'
+	option target 'REJECT'
+	option enabled 'false'
+
 config include
 	option path '/etc/firewall.user'
 
