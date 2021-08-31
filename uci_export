@@ -14,17 +14,22 @@ config dnsmasq
 	option authoritative '1'
 	option readethers '1'
 	option leasefile '/tmp/dhcp.leases'
-	option resolvfile '/tmp/resolv.conf.auto'
+	option resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
 	option nonwildcard '1'
 	option localservice '1'
+	option ednspacket_max '1232'
 
 config dhcp 'lan'
 	option interface 'lan'
 	option start '100'
 	option limit '150'
 	option leasetime '12h'
+	option dhcpv4 'disabled'
 	option dhcpv6 'disabled'
 	option ra 'disabled'
+	option ra_slaac '1'
+	list ra_flags 'managed-config'
+	list ra_flags 'other-config'
 
 config dhcp 'wan'
 	option interface 'wan'
@@ -167,6 +172,15 @@ config rule
 	option proto 'udp'
 	option target 'ACCEPT'
 
+config rule
+	option name 'Support-UDP-Traceroute'
+	option src 'wan'
+	option dest_port '33434:33689'
+	option proto 'udp'
+	option family 'ipv4'
+	option target 'REJECT'
+	option enabled 'false'
+
 config include
 	option path '/etc/firewall.user'
 
@@ -213,7 +227,7 @@ config internal 'diag'
 package network
 
 config interface 'loopback'
-	option ifname 'lo'
+	option device 'lo'
 	option proto 'static'
 	option ipaddr '127.0.0.1'
 	option netmask '255.0.0.0'
@@ -221,19 +235,24 @@ config interface 'loopback'
 config globals 'globals'
 	option ula_prefix '[expunged]'
 
-config interface 'lan'
+config device
+	option name 'br-lan'
 	option type 'bridge'
-	option ifname 'lan1 lan2'
+	list ports 'lan1'
+	list ports 'lan2'
+
+config interface 'lan'
+	option device 'br-lan'
 	option proto 'dhcp'
 
 config interface 'lan6'
-	option ifname 'br-lan'
+	option device 'br-lan'
 	option proto 'dhcpv6'
 
 package rpcd
 
 config rpcd
-	option socket '/var/run/ubus.sock'
+	option socket '/var/run/ubus/ubus.sock'
 	option timeout '30'
 
 config login
@@ -264,7 +283,6 @@ package ucitrack
 config network
 	option init 'network'
 	list affects 'dhcp'
-	list affects 'radvd'
 
 config wireless
 	list affects 'network'
@@ -325,7 +343,7 @@ config uhttpd 'main'
 	list listen_http '[::]:80'
 	list listen_https '0.0.0.0:443'
 	list listen_https '[::]:443'
-	option redirect_https '1'
+	option redirect_https '0'
 	option home '/www'
 	option rfc1918_filter '1'
 	option max_requests '3'
@@ -338,10 +356,11 @@ config uhttpd 'main'
 	option network_timeout '30'
 	option http_keepalive '20'
 	option tcp_keepalive '1'
+	option ubus_prefix '/ubus'
 
 config cert 'defaults'
 	option days '730'
-	option key_type 'rsa'
+	option key_type 'ec'
 	option bits '2048'
 	option ec_curve 'P-256'
 	option country 'ZZ'
