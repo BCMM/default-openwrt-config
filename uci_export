@@ -46,7 +46,8 @@ config odhcpd 'odhcpd'
 
 package dropbear
 
-config dropbear
+config dropbear 'main'
+	option enable '1'
 	option PasswordAuth 'on'
 	option RootPasswordAuth 'on'
 	option Port '22'
@@ -265,7 +266,7 @@ config system
 	option hostname 'OpenWrt'
 	option timezone 'UTC'
 	option ttylogin '0'
-	option log_size '64'
+	option log_size '128'
 	option urandom_seed '0'
 
 config timeserver 'ntp'
@@ -275,64 +276,6 @@ config timeserver 'ntp'
 	list server '1.openwrt.pool.ntp.org'
 	list server '2.openwrt.pool.ntp.org'
 	list server '3.openwrt.pool.ntp.org'
-
-package ucitrack
-
-config network
-	option init 'network'
-	list affects 'dhcp'
-
-config wireless
-	list affects 'network'
-
-config firewall
-	option init 'firewall'
-	list affects 'luci-splash'
-	list affects 'qos'
-	list affects 'miniupnpd'
-
-config olsr
-	option init 'olsrd'
-
-config dhcp
-	option init 'dnsmasq'
-	list affects 'odhcpd'
-
-config odhcpd
-	option init 'odhcpd'
-
-config dropbear
-	option init 'dropbear'
-
-config httpd
-	option init 'httpd'
-
-config fstab
-	option exec '/sbin/block mount'
-
-config qos
-	option init 'qos'
-
-config system
-	option init 'led'
-	option exec '/etc/init.d/log reload'
-	list affects 'luci_statistics'
-	list affects 'dhcp'
-
-config luci_splash
-	option init 'luci_splash'
-
-config upnpd
-	option init 'miniupnpd'
-
-config ntpclient
-	option init 'ntpclient'
-
-config samba
-	option init 'samba'
-
-config tinyproxy
-	option init 'tinyproxy'
 
 package uhttpd
 
@@ -357,7 +300,7 @@ config uhttpd 'main'
 	option ubus_prefix '/ubus'
 
 config cert 'defaults'
-	option days '730'
+	option days '397'
 	option key_type 'ec'
 	option bits '2048'
 	option ec_curve 'P-256'
