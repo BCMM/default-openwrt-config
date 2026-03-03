@@ -2,10 +2,10 @@
 config interface 'loopback'
 	option device 'lo'
 	option proto 'static'
-	option ipaddr '127.0.0.1'
-	option netmask '255.0.0.0'
+	list ipaddr '127.0.0.1/8'
 
 config globals 'globals'
+	option dhcp_default_duid '[expunged]'
 	option ula_prefix '[expunged]'
 
 config device
